@@ -7,20 +7,18 @@ import DataStructures
 import ObjectsModel
 import PropertiesModel
 
-# Наследуемся от QMainWindow
+
 class MainWindow(QMainWindow):
-    # Переопределяем конструктор класса
     def __init__(self):
-        # Обязательно нужно вызвать метод супер класса
         QMainWindow.__init__(self)
 
-        self.setMinimumSize(QSize(480, 80))  # Устанавливаем размеры
-        self.setWindowTitle("Line Edit IP Address")  # Устанавливаем заголовок окна
-        central_widget = QWidget(self)  # Создаём центральный виджет
-        self.setCentralWidget(central_widget)  # Устанавливаем центральный виджет
+        self.setMinimumSize(QSize(480, 80))
+        self.setWindowTitle("PyQtSample")
+        central_widget = QWidget(self)
+        self.setCentralWidget(central_widget)
 
-        hbox_layout = QHBoxLayout(self)  # Создаём QGridLayout
-        central_widget.setLayout(hbox_layout)  # Устанавливаем данное размещение в центральный виджет
+        hbox_layout = QHBoxLayout(self)
+        central_widget.setLayout(hbox_layout)
 
         buttons_background = QWidget(self)
         buttons_layout = QHBoxLayout()
@@ -67,14 +65,32 @@ class MainWindow(QMainWindow):
     def onPropertyChanged(self):
         self.rebuildModel()
 
-    def rebuildModel(self, index=QModelIndex()):
+    def rebuildModel(self):
+        #save index hierarhy
+        indexes = []
+        tmp_index = self.tree_view.currentIndex()
+        indexes.append(tmp_index)
+        while tmp_index.parent().isValid():
+            indexes.append(tmp_index.parent())
+            tmp_index = tmp_index.parent()
+
         self.tree_model.initRoot(self.items)
         self.tree_view.expandAll()
 
-        # if index == QModelIndex() or not index.isValid(): #sometimes crushes, enable to select item by index
-        index = self.tree_model.index(0, 0)
+        if len(indexes) == 0:
+            self.onClicked(self.tree_model.index(0,0))
+        else:
+            last_index = indexes.pop(-1)
+            index = self.tree_model.index(last_index.row(), last_index.column())
+            #restore index hierarchy
+            while len(indexes) > 0:
+                last_index = indexes.pop(-1)
+                index = self.tree_model.index(last_index.row(), last_index.column(), index)
 
-        self.onClicked(index)
+            if index.isValid():
+                self.onClicked(index)
+            else:
+                self.onClicked(self.tree_model.index(0, 0))
 
     def init_menu(self):
         exit_action = QAction("&Exit", self)
@@ -89,10 +105,11 @@ class MainWindow(QMainWindow):
         for child in object.childrens:
             self.appendObjectOnScene(child)
 
-    def onClicked(self, index=QModelIndex()):
+    def onClicked(self, index):
         object = index.data(Qt.UserRole + 1)
-        # object = DataStructures.Object
+
         self.properties_model.initProperties(object)
+
         self.scene.clear()
         self.appendObjectOnScene(object)
         self.tree_view.setCurrentIndex(index)
@@ -103,7 +120,7 @@ class MainWindow(QMainWindow):
         object = index.data(Qt.UserRole + 1)
         print(object.description())
         object.add_children(DataStructures.Object("New item"))
-        self.rebuildModel(self.tree_view.currentIndex())
+        self.rebuildModel()
 
     def onRemoveClicked(self):
         index = self.tree_view.currentIndex()

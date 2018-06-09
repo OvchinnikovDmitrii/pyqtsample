@@ -5,7 +5,6 @@ from PyQt5.QtGui import QColor
 class Object:
     def __init__(self, name="ObjectName", param1="2", param2="12"):
         self.childrens = []
-        self.name = name
         self.properties = {}
         self.properties["name"] = name
         self.properties["param1"] = param1
@@ -13,6 +12,14 @@ class Object:
         self.polygons = []
         self.color = QColor(55, 140, 55)
         self.parent = None
+
+    @property
+    def name(self):
+        return self.properties["name"]
+
+    @name.setter
+    def name(self, value):
+        self.properties["name"] = value
 
     def add_children(self, object):
         self.childrens.append(object)
@@ -27,7 +34,6 @@ class Object:
         return result
 
 
-    # @staticmethod
 def createPoly(x, y, w, h):
     return QPolygonF([QPointF(x, y), QPointF(x + w, y), QPointF(x + w, y + h), QPointF(x, y + h)])
 

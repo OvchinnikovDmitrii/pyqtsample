@@ -9,5 +9,5 @@ if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
     mw = MWnd.MainWindow()
-    mw.showMaximized()
+    mw.show()
     sys.exit(app.exec())

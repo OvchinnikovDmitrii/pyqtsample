@@ -25,13 +25,12 @@ class MainWindow(QMainWindow):
         buttons_background = QWidget(self)
         buttons_layout = QHBoxLayout()
         buttons_background.setLayout(buttons_layout)
-        add_button = QPushButton("Add")
-        buttons_layout.addWidget(add_button)
-        add_button.clicked.connect(self.onAddClicked)
 
-        remove_button = QPushButton("Remove")
-        buttons_layout.addWidget(remove_button)
-        remove_button.clicked.connect(self.onRemoveClicked)
+        self.add_button = QPushButton("Add")
+        buttons_layout.addWidget(self.add_button)
+
+        self.remove_button = QPushButton("Remove")
+        buttons_layout.addWidget(self.remove_button)
 
         tree_layout = QVBoxLayout(self)
         self.tree_view = QTreeView();
@@ -39,8 +38,6 @@ class MainWindow(QMainWindow):
         self.tree_view.setMaximumWidth(300)
         self.tree_model = ObjectsModel.TreeModel()
         self.tree_view.setModel(self.tree_model)
-        # self.tree_model.connect(self.tree_model, QtCore.SIGNAL('itemChanged( QStandardItem *)'), onItemClicked)
-        self.tree_view.clicked.connect(self.onClicked)
         tree_layout.addWidget(buttons_background)
         tree_layout.addWidget(self.tree_view)
 
@@ -59,13 +56,23 @@ class MainWindow(QMainWindow):
 
         self.init_menu()
         self.test()
+        self.connectSignals()
+
+    def connectSignals(self):
+        self.add_button.clicked.connect(self.onAddClicked)
+        self.remove_button.clicked.connect(self.onRemoveClicked)
+        self.tree_view.clicked.connect(self.onClicked)
+        self.properties_model.dataChanged.connect(self.onPropertyChanged)
+
+    def onPropertyChanged(self):
+        self.rebuildModel()
 
     def rebuildModel(self, index=QModelIndex()):
         self.tree_model.initRoot(self.items)
         self.tree_view.expandAll()
 
-        if index == QModelIndex():
-            index = self.tree_model.index(0, 0)
+        # if index == QModelIndex() or not index.isValid(): #sometimes crushes, enable to select item by index
+        index = self.tree_model.index(0, 0)
 
         self.onClicked(index)
 
@@ -92,7 +99,9 @@ class MainWindow(QMainWindow):
 
     def onAddClicked(self):
         index = self.tree_view.currentIndex()
+        print(index)
         object = index.data(Qt.UserRole + 1)
+        print(object.description())
         object.add_children(DataStructures.Object("New item"))
         self.rebuildModel(self.tree_view.currentIndex())
 

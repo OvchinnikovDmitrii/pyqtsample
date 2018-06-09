@@ -60,12 +60,14 @@ class MainWindow(QMainWindow):
         self.init_menu()
         self.test()
 
-    def rebuildModel(self):
+    def rebuildModel(self, index=QModelIndex()):
         self.tree_model.initRoot(self.items)
         self.tree_view.expandAll()
 
-        self.onClicked(self.tree_model.index(0, 0))
-        self.tree_view.setCurrentIndex(self.tree_model.index(0, 0))
+        if index == QModelIndex():
+            index = self.tree_model.index(0, 0)
+
+        self.onClicked(index)
 
     def init_menu(self):
         exit_action = QAction("&Exit", self)
@@ -80,18 +82,19 @@ class MainWindow(QMainWindow):
         for child in object.childrens:
             self.appendObjectOnScene(child)
 
-    def onClicked(self, index = QModelIndex()):
+    def onClicked(self, index=QModelIndex()):
         object = index.data(Qt.UserRole + 1)
         # object = DataStructures.Object
         self.properties_model.initProperties(object)
         self.scene.clear()
         self.appendObjectOnScene(object)
+        self.tree_view.setCurrentIndex(index)
 
     def onAddClicked(self):
         index = self.tree_view.currentIndex()
         object = index.data(Qt.UserRole + 1)
         object.add_children(DataStructures.Object("New item"))
-        self.rebuildModel()
+        self.rebuildModel(self.tree_view.currentIndex())
 
     def onRemoveClicked(self):
         index = self.tree_view.currentIndex()

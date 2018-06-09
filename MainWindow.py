@@ -122,7 +122,7 @@ class MainWindow(QMainWindow):
         static.add_children(DataStructures.Object("child_1"))
         static.add_children(DataStructures.Object("child_2"))
         static.add_children(DataStructures.Object("child_3"))
-        static.color = QColor(200, 0, 0)
+        static.color = QColor(200, 0, 0).name()
         static.polygons.append(DataStructures.createPoly(0,0,800, 200))
         static.childrens[0].add_children(DataStructures.Object("child_1.1"))
         static.childrens[0].polygons.append(DataStructures.createPoly(40, 40, 80, 40))
@@ -134,7 +134,7 @@ class MainWindow(QMainWindow):
         dynamic.add_children(DataStructures.Object("child_2"))
         dynamic.add_children(DataStructures.Object("child_3"))
         dynamic.childrens[2].add_children(DataStructures.Object("child_2.1", 4, 44))
-        dynamic.color = QColor(0, 0, 200)
+        dynamic.color = QColor(0, 0, 200).name()
         dynamic.polygons.append(DataStructures.createPoly(0, 0, 200, 800))
         self.items.append(dynamic)
 

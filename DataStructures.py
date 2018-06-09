@@ -10,8 +10,16 @@ class Object:
         self.properties["param1"] = param1
         self.properties["param2"] = param2
         self.polygons = []
-        self.color = QColor(55, 140, 55)
+        self.properties["color"] = QColor(55,155,55).name()
         self.parent = None
+
+    @property
+    def color(self):
+        return QColor(self.properties["color"])
+
+    @color.setter
+    def color(self, value):
+        self.properties["color"] = value
 
     @property
     def name(self):

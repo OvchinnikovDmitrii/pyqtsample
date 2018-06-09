@@ -84,8 +84,8 @@ class MainWindow(QMainWindow):
         file_menu.addAction(exit_action)
 
     def appendObjectOnScene(self, object = DataStructures.Object):
-        for polygon in object.polygons:
-            self.scene.addPolygon(polygon, object.color)
+        if object.rect.isValid():
+            self.scene.addRect(object.rect, object.color)
         for child in object.childrens:
             self.appendObjectOnScene(child)
 
@@ -118,25 +118,21 @@ class MainWindow(QMainWindow):
 
     def test(self):
         self.items = []
-        static = DataStructures.Object("Static", 0, 0)
+        static = DataStructures.Object("Static", DataStructures.createRect(0, 0, 800, 200))
         static.add_children(DataStructures.Object("child_1"))
         static.add_children(DataStructures.Object("child_2"))
         static.add_children(DataStructures.Object("child_3"))
         static.color = QColor(200, 0, 0).name()
-        static.polygons.append(DataStructures.createPoly(0,0,800, 200))
-        static.childrens[0].add_children(DataStructures.Object("child_1.1"))
-        static.childrens[0].polygons.append(DataStructures.createPoly(40, 40, 80, 40))
+        static.childrens[0].add_children(DataStructures.Object("child_1.1", DataStructures.createRect(40, 40, 80, 40)))
 
         self.items.append(static)
 
-        dynamic = DataStructures.Object("Dynamic", 0, 0)
+        dynamic = DataStructures.Object("Dynamic", DataStructures.createRect(0, 0, 200, 800))
         dynamic.add_children(DataStructures.Object("child_1"))
         dynamic.add_children(DataStructures.Object("child_2"))
         dynamic.add_children(DataStructures.Object("child_3"))
-        dynamic.childrens[2].add_children(DataStructures.Object("child_2.1", 4, 44))
+        dynamic.childrens[2].add_children(DataStructures.Object("child_2.1"))
         dynamic.color = QColor(0, 0, 200).name()
-        dynamic.polygons.append(DataStructures.createPoly(0, 0, 200, 800))
         self.items.append(dynamic)
 
         self.rebuildModel()
-        print (static.description(0))

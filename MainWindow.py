@@ -96,7 +96,11 @@ class MainWindow(QMainWindow):
         exit_action = QAction("&Exit", self)
         exit_action.setShortcut('Ctrl+Q')
         exit_action.triggered.connect(qApp.quit)
-        file_menu = self.menuBar()
+        file_menu = self.menuBar().addMenu("&File")
+        file_menu.addAction(QAction("Open", self))
+        file_menu.addAction(QAction("Save", self))
+        file_menu.addAction(QAction("SaveAs", self))
+        file_menu.addSeparator()
         file_menu.addAction(exit_action)
 
     def appendObjectOnScene(self, object = DataStructures.Object):
